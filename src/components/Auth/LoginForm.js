@@ -10,27 +10,28 @@ import {
 import { useFormik } from "formik";
 import * as Yup from "yup";
 
-import { user, userDetails } from '../../utils/userDB'
+import useAuth from "../../hooks/useAuth";
+
+import { user, userDetails } from "../../utils/userDB";
 
 export default function LoginForm() {
-
-    const [error, setError] = useState("")
+  const [error, setError] = useState("");
+  const { login } = useAuth()
 
   const formik = useFormik({
     initialValues: initialValues(),
     validationSchema: Yup.object(validationSchema()),
     onSubmit: (formValue) => {
-        setError("")
+      setError("");
       const { username, password } = formValue;
-      if(username !== user.username || password !== user.password) {
-        setError("El usuario o la contraseña no son correctos")
-        console.log("El usuario o la contraseña no son correctos")
+      if (username !== user.username || password !== user.password) {
+        setError("El usuario o la contraseña no son correctos");
       } else {
-        console.log("Login correcto")
-        console.log(userDetails)
+        login(userDetails)
       }
     },
   });
+
   return (
     <View>
       <Text style={styles.title}>Iniciar sesión</Text>
