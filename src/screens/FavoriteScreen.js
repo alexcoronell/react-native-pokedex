@@ -15,7 +15,7 @@ export default function FavoriteScreen() {
   useFocusEffect(
     useCallback(() => {
       if (!auth) return;
-      (() => getFavorites())();
+      (async() => getFavorites())();
     }, [auth])
   );
 

@@ -1,10 +1,29 @@
-import React from "react";
+import React, { useState, useCallback } from "react";
 import { StyleSheet, View, Text, Button } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
+import { size } from "lodash";
 
 import useAuth from "../../hooks/useAuth";
+import { getPokemonFavoriteApi } from "../../api/favorite";
 
 export default function UserData() {
   const { auth, logout } = useAuth();
+  const [total, setTotal] = useState(0);
+
+  useFocusEffect(
+    useCallback(() => {
+      (async () => getTotalFavorites())();
+    }, [])
+  );
+
+  const getTotalFavorites = async () => {
+    try {
+      const response = await getPokemonFavoriteApi();
+      setTotal(size(response));
+    } catch (e) {
+      console.error(e);
+    }
+  };
   return (
     <View style={styles.content}>
       <View style={styles.titleBlock}>
@@ -16,7 +35,7 @@ export default function UserData() {
         <ItemMenu title="Nombre" text={`${auth.firstname} ${auth.lastname}`} />
         <ItemMenu title="Username" text={`${auth.username}`} />
         <ItemMenu title="Email" text={`${auth.email}`} />
-        <ItemMenu title="Total Favoritos" text={`0 Pokemos`} />
+        <ItemMenu title="Total Favoritos" text={`${total} Pokemos`} />
       </View>
 
       <Button style={styles.btnLogout} title="Desconectarte" onPress={logout} />
@@ -58,9 +77,9 @@ const styles = StyleSheet.create({
   itemMenuTitle: {
     fontWeight: "bold",
     paddingRight: 10,
-    width: 120
+    width: 120,
   },
   btnLogout: {
-    paddingTop: 20
-  }
+    paddingTop: 20,
+  },
 });
