@@ -1,10 +1,12 @@
-import { FlatList, StyleSheet, ActivityIndicator } from "react-native";
+import { FlatList, StyleSheet, ActivityIndicator, Platform } from "react-native";
 import React from "react";
 
 import PokemonCard from "./PokemonCard";
 
 export default function PokemonList(props) {
   const { pokemons, loadPokemons, isNext } = props;
+
+  console.log(Platform.OS)
 
   const loadMore = () => {
     console.log("Load more pokemons");
@@ -36,10 +38,10 @@ export default function PokemonList(props) {
 const styles = StyleSheet.create({
   flatListContentContainer: {
     paddingHorizontal: 5,
-    paddingVertical: 50,
+    marginTop: Platform.OS === 'android' ? 40 : 0
   },
   spinner: {
     marginTop: 20,
-    marginBottom: 60,
+    marginBottom: Platform.OS === 'android' ? 90 : 60
   },
 });
