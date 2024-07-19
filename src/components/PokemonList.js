@@ -6,10 +6,7 @@ import PokemonCard from "./PokemonCard";
 export default function PokemonList(props) {
   const { pokemons, loadPokemons, isNext } = props;
 
-  console.log(Platform.OS)
-
   const loadMore = () => {
-    console.log("Load more pokemons");
     loadPokemons();
   };
   return (

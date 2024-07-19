@@ -1,10 +1,13 @@
 import { ScrollView } from "react-native";
 import React, { useState, useEffect } from "react";
-import Icon from 'react-native-vector-icons/FontAwesome5'
+import Icon from "react-native-vector-icons/FontAwesome5";
+
+import useAuth from "../hooks/useAuth";
 
 import { getPokemonDetailsApi } from "../api/pokemon";
 
 import Header from "../components/Pokemon/Header";
+import Favorite from "../components/Pokemon/Favorite";
 import Type from "../components/Pokemon/Type";
 import Stats from "../components/Pokemon/Stats";
 
@@ -14,13 +17,22 @@ export default function PokemonScreen(props) {
     route: { params },
   } = props;
   const [pokemon, setPokemon] = useState(null);
+  const { auth } = useAuth();
 
-  useEffect(()=> {
+  useEffect(() => {
     navigation.setOptions({
-      headerRight: () => null,
-      headerLeft: () => <Icon name="arrow-left" color="#FFF" size={20} style={{marginLeft: 5}} onPress={navigation.goBack} />
-    })
-  }, [navigation, params])
+      headerRight: () => auth && <Favorite id={pokemon?.id} />,
+      headerLeft: () => (
+        <Icon
+          name="arrow-left"
+          color="#FFF"
+          size={20}
+          style={{ marginLeft: 5 }}
+          onPress={navigation.goBack}
+        />
+      ),
+    });
+  }, [navigation, params, pokemon]);
 
   useEffect(() => {
     (async () => await loadPokemon())();
