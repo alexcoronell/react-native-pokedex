@@ -1,26 +1,47 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, Button } from "react-native";
+import React, { useState, useCallback } from "react";
+import { Text } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
+import useAuth from "../hooks/useAuth";
 import { getPokemonFavoriteApi } from "../api/favorite";
+import { getPokemonDetailsApi } from "../api/pokemon";
+
+import PokemonList from "../components/PokemonList";
 
 export default function FavoriteScreen() {
-  const [favorites, setFavorites] = useState(null);
+  const { auth } = useAuth();
+  const [pokemons, setPokemons] = useState(null);
 
-  useEffect(() => {
-    (async () => {
-      getFavorites();
-    })();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      if (!auth) return;
+      (() => getFavorites())();
+    }, [auth])
+  );
 
   const getFavorites = async () => {
-    const response = await getPokemonFavoriteApi();
-    setFavorites(await response);
-    console.log(response, favorites)
+    try {
+      const response = await getPokemonFavoriteApi();
+      const pokemonsArray = [];
+      for await (const id of response) {
+        const res = await getPokemonDetailsApi(id);
+        const pokemonDetail = {
+          id: res.id,
+          name: res.name,
+          type: res.types[0].type.name,
+          order: res.order,
+          image: res.sprites.other["official-artwork"].front_default,
+        };
+        pokemonsArray.push(pokemonDetail);
+        setPokemons(await pokemonsArray);
+      }
+    } catch (e) {
+      console.error(e);
+    }
   };
 
-  return (
-    <View>
-      <Text>FavoriteScreen</Text>
-      <Button title="Obtener Favoritos" onPress={getFavorites} />
-    </View>
+  return !auth ? (
+    <Text>Usuario no logueado</Text>
+  ) : (
+    <PokemonList pokemons={pokemons} />
   );
 }
